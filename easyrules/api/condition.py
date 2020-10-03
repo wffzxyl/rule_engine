@@ -8,7 +8,6 @@ from .facts import Facts
 
 
 class Condition(metaclass=ABCMeta):
-    # TODO, A exception decoration.
     @abstractmethod
     def evaluate(self, facts: Facts) -> bool:
         """

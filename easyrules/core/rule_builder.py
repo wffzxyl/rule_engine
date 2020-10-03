@@ -1,45 +1,49 @@
 # coding: utf-8
+"""
+Builder to create Rule instances.
+"""
 
-import sys
 from easyrules.api import Action, Condition
+from easyrules.config import DEFAULT_NAME, DEFAULT_DESCRIPTION, DEFAULT_DOMAIN, DEFAULT_PRIORITY
 from .default_rule import DefaultRule
+
 
 class RuleBuilder():
     def __init__(self):
-        self._name = 'rule'
-        self._description = 'description'
-        self._priority = sys.maxsize
-        self._domain = 'None'
-        self._condition = False
+        self._name = DEFAULT_NAME,
+        self._description = DEFAULT_DESCRIPTION,
+        self._domain = DEFAULT_DOMAIN,
+        self._priority = DEFAULT_PRIORITY,
+        self._condition = None
         self._actions = []
 
-    def name(self, name):
+    def name(self, name: str):
         # Set rule name.
         self._name = name
         return self
 
-    def description(self, description):
+    def description(self, description: str):
         # Set rule description.
         self._description = description
         return self
 
-    def domain(self, domain):
+    def domain(self, domain: str):
         # Set rule domain.
         self._domain = domain
         return self
 
-    def priority(self, priority):
+    def priority(self, priority: int):
         # Set rule priority.
         self._priority = priority
         return self
 
     def when(self, condition: Condition):
-        # Set rule condition.
+        # Set rule Condition object.
         self._condition = condition
         return self
 
     def then(self, action: Action):
-        # Add an action to the rule.
+        # Add an Action object to the rule.
         self._actions.append(action)
         return self
 

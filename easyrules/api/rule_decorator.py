@@ -1,15 +1,15 @@
 # coding: utf-8
 
-import sys
 from functools import wraps
+from easyrules import config
 
 
-class DRule(object):
+class RuleDecorator(object):
     def __init__(self,
-                 name: str = 'rule',
-                 description: str = 'description',
-                 domain: str = None,
-                 priority: int = sys.maxsize
+                 name: str = config.DEFAULT_NAME,
+                 description: str = config.DEFAULT_DESCRIPTION,
+                 domain: str = config.DEFAULT_DOMAIN,
+                 priority: int = config.DEFAULT_PRIORITY
                  ):
         self._name = name
         self._description = description

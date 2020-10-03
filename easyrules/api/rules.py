@@ -4,30 +4,36 @@ This class encapsulates a set of rules and represents a rules namespace.
 Rules must have a unique name within a rules namespace.
 """
 
-from .rule import Rule
+from easyrules.utils import logger
 
 
 class Rules:
     def __init__(self, rules: set = None):
         self._rules = rules if rules else set()
 
-    def add(self, rule: Rule):
+    def add(self, *rules):
         """
-        Add a rule, replacing any rule with the same name.
+        Add one or more rules, replacing any rule with the same name.  # TODO, here replaced???
         :param fact: rule to add, must not be None
         """
-        if not rule: raise TypeError('rule must not be None')
-        self._rules.add(rule)
+        if not rules: raise TypeError('rule must not be None')
+        for rule in rules:
+            for rule_ in self._rules:
+                if rule.name == rule_.name:
+                    logger.warning('removed same name rule: %s' % rule_)
+                    self._rules.remove(rule_)
+            self._rules.add(rule)
+
+    def remove(self, *rules):
+        # Remove one or more rules.
+        for rule in rules:
+            rule = self.get_by_name(rule.name)
+            if rule:
+                self._rules.remove(rule)
 
     def get(self, rule_name: str):
         # Get a rule by its name, or return None.
         return self.get_by_name(rule_name)
-
-    def remove(self, rule: Rule):
-        # Remove one rule.
-        rule = self.get_by_name(rule.name)
-        if rule:
-            self._rules.remove(rule)
 
     def get_by_name(self, rule_name: str):
         # Get a rule by its name, or return None.
@@ -66,6 +72,6 @@ class Rules:
 
     def __iter__(self):
         # Return an iterator on the list of rules ordered by priority.
-        rules = list(set(self._rules))
+        rules = list(self._rules)
         rules.sort(key=lambda rule: rule.priority, reverse=False)
         return iter(rules)

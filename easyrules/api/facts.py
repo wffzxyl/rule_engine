@@ -4,6 +4,7 @@ This class encapsulates a set of facts and represents a facts namespace.
 Facts have unique names within a Facts object.
 """
 
+from easyrules.utils import logger
 from .fact import Fact
 
 
@@ -32,7 +33,7 @@ class Facts():
         """
         if not fact: raise TypeError('fact must not be None')
         if self.get_by_name(fact.name):
-            print('removed same name fact, fact name: %s' % fact.name)
+            logger.warning('removed same name fact: %s' % fact)
             self._facts.remove(fact)
         self._facts.add(fact)
 
@@ -71,14 +72,12 @@ class Facts():
         self._facts = set()
 
     def __repr__(self):
-        return  '[' + ','.join(self._facts) + ']'
+        return '[' + ','.join(self._facts) + ']'
 
     __str__ = __repr__
 
     def __len__(self):
-        # Return the length of the set of facts
         return len(self._facts)
 
     def __iter__(self):
-        # Return an iterator on the set of facts
         return iter(self._facts)

@@ -1,21 +1,20 @@
 # coding: utf-8
+"""
+Default RulesEngine implementation.
+Rules are fired according to their natural order which is priority by default.
+This implementation iterates over the sorted set of rules, evaluates the condition
+of each rule and executes its actions if the condition evaluates to true.
+"""
 
-import logging
 import traceback
-from easyrules.api import Facts, Rule, Rules, RulesEngine, RulesEngineParameters
+from easyrules.api import Rule, Facts, Rules, RulesEngineParameters
+from easyrules.utils import logger
 from .abstract_rules_engine import AbstractRulesEngine
-
-logger = logging.getLogger("easyrules")
-logger.addHandler(logging.NullHandler())
 
 
 class DefaultRuleEngine(AbstractRulesEngine):
     def __init__(self, parameters: RulesEngineParameters = None):
         super(DefaultRuleEngine, self).__init__(parameters)
-
-    # def set_connection(self, ip, port):
-    #     # TODO, 保持链接，将数据上传到服务中
-    #     pass
 
     def fire(self, rules: Rules, facts: Facts):
         self._trigger_listeners_before_fire(rules, facts)
@@ -23,7 +22,6 @@ class DefaultRuleEngine(AbstractRulesEngine):
         self._trigger_listeners_after_fire(rules, facts)
 
     def _do_fire(self, rules: Rules, facts: Facts):
-        # TODO， kbqa_engine，每次从外部代码或配置文件，实时加载所有rules，可以配置出发前后Listeners
         if len(rules) == 0:
             logger.warning('No rules registered! Nothing to apply')
             return
@@ -47,32 +45,31 @@ class DefaultRuleEngine(AbstractRulesEngine):
                 continue
 
             evaluation_result = False
-            if rule.evaluate(facts):
-                try:
-                    evaluation_result = rule.evaluate(facts)
-                    if self._parameters.skip_on_first_applied_rule:
-                        break
-                except Exception as e:
-                    logger.error("Rule %s evaluated with error, %s" % (name, traceback.format_exc()))
-                    self._trigger_listeners_on_evaluate_error(rule, facts, e)
-                    if self._parameters.skip_on_first_non_triggered_rule:
-                        logger.debug("Next rules will be skipped since parameter skip_on_first_non_triggered_rule is set")
-                        break
+            try:
+                evaluation_result = rule.evaluate(facts)
+                if self._parameters.skip_on_first_applied_rule:
+                    break
+            except Exception as e:
+                logger.error("Rule %s evaluated with error, %s" % (name, traceback.format_exc()))
+                self._trigger_listeners_on_evaluate_error(rule, facts, e)
+                if self._parameters.skip_on_first_non_triggered_rule:
+                    logger.debug("Next rules will be skipped since parameter skip_on_first_non_triggered_rule is set")
+                    break
 
             if evaluation_result:
                 logger.debug("Rule %s triggered" % name)
                 self._trigger_listeners_after_evaluate(rule, facts, True)
                 try:
                     self._trigger_listeners_before_execute(rule, facts)
-                    rule.execute(facts)  # TODO, 添加返回值，或者修改facts中的recorder？
+                    rule.execute(facts)
                     logger.debug("Rule %s performed successfully" % name)
-                    self._trigger_listeners_on_sucess(rule, facts)
+                    self._trigger_listeners_on_success(rule, facts)
                     if self._parameters.skip_on_first_applied_rule:
                         print("Next rules will be skipped since parameter skip_on_first_applied_rule is set")
                         break
                 except Exception as e:
-                    logger.error("Rule %s executed with error, %s" % (name, e))
-                    self._trigger_listeners_on_failure(rule, facts)
+                    logger.error("Rule %s executed with error, %s" % (name, traceback.format_exc()))
+                    self._trigger_listeners_on_failure(rule, facts, e)
                     if self._parameters.skip_on_first_failed_rule:
                         print("Next rules will be skipped since parameter skip_on_first_failed_rule is set")
                         break
@@ -109,38 +106,39 @@ class DefaultRuleEngine(AbstractRulesEngine):
                 result[rule.name] = rule.evaluate(facts)
         return result
 
-    def should_be_evaluated(self, rule: Rule, facts: Facts):
-        # TODO，在Facts，Fact中添加domain私有变量，首先判断rule和fact是不是同一个domain中的；可以放在_trigger_listeners_before_evaluate
-        return self._trigger_listeners_before_evaluate(rule, facts)
-
     def _trigger_listeners_before_fire(self, rules: Rules, facts: Facts):
-        # rulesEngineListeners.forEach(rulesEngineListener -> rulesEngineListener.beforeEvaluate(rule, facts));
-        return True
+        for rule_engine_listener in self._rule_engine_listeners:
+            rule_engine_listener.before_evaluate(rules, facts)
 
     def _trigger_listeners_after_fire(self, rules: Rules, facts: Facts):
-        # rulesEngineListeners.forEach(rulesEngineListener -> rulesEngineListener.afterExecute(rule, facts));
-        return True
+        for rule_engine_listener in self._rule_engine_listeners:
+            rule_engine_listener.after_evaluate(rules, facts)
+
+    def should_be_evaluated(self, rule: Rule, facts: Facts):
+        return self._trigger_listeners_before_evaluate(rule, facts)
 
     def _trigger_listeners_before_evaluate(self, rule: Rule, facts: Facts):
-        # return ruleListeners.stream().allMatch(ruleListener -> ruleListener.beforeEvaluate(rule, facts));
+        for rule_listener in self._rule_listeners:
+            if not rule_listener.before_evaluate(rule, facts):
+                return False
         return True
 
-    def _trigger_listeners_on_evaluate_error(self, rules: Rules, facts: Facts, exception: Exception):
-        # ruleListeners.forEach(ruleListener -> ruleListener.onEvaluationError(rule, facts, exception));
-        pass
+    def _trigger_listeners_on_evaluate_error(self, rule: Rule, facts: Facts, exception: Exception):
+        for rule_listener in self._rule_listeners:
+            rule_listener.on_evaluation_error(rule, facts, exception)
 
-    def _trigger_listeners_after_evaluate(self, rules: Rules, facts: Facts, evaluation_result: bool):
-        # ruleListeners.forEach(ruleListener -> ruleListener.afterEvaluate(rule, facts, evaluationResult));
-        pass
+    def _trigger_listeners_after_evaluate(self, rule: Rule, facts: Facts, evaluation_result: bool):
+        for rule_listener in self._rule_listeners:
+            rule_listener.after_evaluate(rule, facts, evaluation_result)
 
-    def _trigger_listeners_before_execute(self, rules: Rules, facts: Facts):
-        # ruleListeners.forEach(ruleListener -> ruleListener.beforeExecute(rule, facts));
-        return True
+    def _trigger_listeners_before_execute(self, rule: Rule, facts: Facts):
+        for rule_listener in self._rule_listeners:
+            rule_listener.before_execute(rule, facts)
 
-    def _trigger_listeners_on_sucess(self, rules: Rules, facts: Facts):
-        # ruleListeners.forEach(ruleListener -> ruleListener.onSuccess(rule, facts));
-        return True
+    def _trigger_listeners_on_success(self, rule: Rule, facts: Facts):
+        for rule_listener in self._rule_listeners:
+            rule_listener.on_success(rule, facts)
 
-    def _trigger_listeners_on_failure(self, rules: Rules, facts: Facts):
-        # ruleListeners.forEach(ruleListener -> ruleListener.onFailure(rule, facts, exception));
-        return True
+    def _trigger_listeners_on_failure(self, rule: Rule, facts: Facts, exception: Exception):
+        for rule_listener in self._rule_listeners:
+            rule_listener.on_failure(rule, facts, exception)

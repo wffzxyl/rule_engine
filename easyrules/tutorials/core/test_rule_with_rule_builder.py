@@ -18,7 +18,7 @@ class HelloWorldAction(Action):
         print('hello word')
 
 
-# s4: Build some DefaultRule objects with RuleBuilder.
+# s4: Build some DefaultRule instances with RuleBuilder.
 rule = RuleBuilder() \
     .name('hello word') \
     .description('desc') \
@@ -28,10 +28,10 @@ rule = RuleBuilder() \
     .then(HelloWorldAction()) \
     .build()
 
-# s5: Add rules to Rules object.
+# s5: Add rules to Rules instance.
 rules = Rules()
 rules.add(rule)
 
-# Define DefaultRuleEngine object and fire rules for target facts.
+# s6: Define DefaultRuleEngine object and fire rules for target facts.
 engine = DefaultRuleEngine()
 engine.fire(rules, facts)

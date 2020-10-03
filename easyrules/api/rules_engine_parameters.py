@@ -15,7 +15,6 @@ class RulesEngineParameters(object):
                  skip_on_first_non_triggered_rule=False,
                  rule_priority_threshold=sys.maxsize):
         """
-
         :param skip_on_first_applied_rule: parameter to skip next applicable rules on first applied rule
         :param skip_on_first_failed_rule: parameter to skip next applicable rules on first failed rule
         :param skip_on_first_non_triggered_rule: parameter to skip next applicable rules on first non triggered rule

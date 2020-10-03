@@ -4,11 +4,12 @@ This interface represents a rule's action.
 """
 
 from abc import ABCMeta, abstractmethod
+from easyrules.utils import exception_handler
 from .facts import Facts
 
 
 class Action(metaclass=ABCMeta):
-    # TODO, A exception decoration.
+    @exception_handler
     @abstractmethod
     def execute(self, facts: Facts):
         """
@@ -17,5 +18,3 @@ class Action(metaclass=ABCMeta):
         :return:
         """
         pass
-
-

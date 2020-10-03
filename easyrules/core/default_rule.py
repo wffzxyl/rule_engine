@@ -1,16 +1,25 @@
 # coding: utf-8
+"""
+The default rule for RuleBuilder with one Condition object and one or more Action object.
+"""
 
-import sys
 from typing import List
-from easyrules.api import Action, Condition, Facts, Rule
+from easyrules.api import Action, Rule, Condition, Facts
+from easyrules.config import DEFAULT_NAME, DEFAULT_DESCRIPTION, DEFAULT_DOMAIN, DEFAULT_PRIORITY
 
 
 class DefaultRule(Rule):
+    """
+    :type name: str
+    :type description: str
+    :type domain: str
+    :type priority: int
+    """
     def __init__(self,
-                 name: str = 'rule',
-                 description: str = 'description',
-                 domain: str = None,
-                 priority: int = sys.maxsize,
+                 name: str = DEFAULT_NAME,
+                 description: str = DEFAULT_DESCRIPTION,
+                 domain: str = DEFAULT_DOMAIN,
+                 priority: int = DEFAULT_PRIORITY,
                  condition: Condition = None,
                  actions: List[Action] = None,
                  ):
@@ -19,14 +28,12 @@ class DefaultRule(Rule):
         self._actions = actions if actions else []
 
     def evaluate(self, facts: Facts):
-        # TODO, change to multi conditions by &&.
+        if not self._condition:
+            return False
         return self._condition.evaluate(facts)
 
     def execute(self, facts: Facts):
-        # TODO, return result list
+        if not self._actions:
+            return
         for action in self._actions:
             action.execute(facts)
-
-    def check_domain(self, domain):
-        # TODO, check it in listeners or engine listeners.
-        pass

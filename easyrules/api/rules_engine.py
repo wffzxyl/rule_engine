@@ -3,13 +3,14 @@
 Rules engine interface.
 """
 
-from abc import ABCMeta, abstractclassmethod
+from abc import ABCMeta, abstractmethod
 from .facts import Facts
 from .rules import Rules
 
 
 class RulesEngine(metaclass=ABCMeta):
     def get_parameters(self):
+        # Get the parameters.
         return None
 
     def get_rule_listeners(self):
@@ -20,6 +21,7 @@ class RulesEngine(metaclass=ABCMeta):
         # Return the list of registered rules engine listeners.
         return []
 
+    @abstractmethod
     def fire(self, rules: Rules, fact: Facts):
         # Fire all registered rules on given facts.
         pass

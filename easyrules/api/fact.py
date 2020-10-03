@@ -1,4 +1,7 @@
 # coding: utf-8
+"""
+A class representing a named fact. Facts have unique names within a Fact instance.
+"""
 
 from abc import ABCMeta
 
@@ -18,12 +21,21 @@ class Fact(metaclass=ABCMeta):
     def value(self):
         return self._value
 
-    def equal(self, other):
-        if id(self) == id(other): return True
-        if not other or type(self) != type(other): return False
-        return self._name == other.name and self._value == other.value
-
     def __repr__(self):
         return 'Fact{name=%s, value=%s}' % (self._name, self._value)
 
     __str__ = __repr__
+
+    def __eq__(self, other):
+        """
+        The Facts API represents a namespace for facts where each fact has a unique name.
+        Hence, equals/hashcode are deliberately calculated only on the fact name.
+        """
+        if id(self) == id(other): return True
+        if not other or isinstance(other, Fact): return NotImplemented
+        return self._name == other.name and self._value == other.value
+
+    def __hash__(self):
+        res = hash(self._name)
+        res = 31 * res + hash(self._value)
+        return res
