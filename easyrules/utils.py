@@ -2,12 +2,12 @@
 
 import logging
 import os
-from .config import ROOT
+from .config import ROOT, LOG_LEVEL
 
 
 def create_logger():
     logger = logging.getLogger("easyrules_logger")
-    logger.setLevel(logging.INFO)
+    logger.setLevel(LOG_LEVEL)
 
     fh = logging.FileHandler(os.path.join(ROOT, 'easyrules.log'))
 

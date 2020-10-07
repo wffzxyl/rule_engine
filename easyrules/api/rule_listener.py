@@ -11,7 +11,7 @@ from .rule import Rule
 class RuleListener(metaclass=ABCMeta):
 
     @abstractmethod
-    def before_evaluate(self, rule: Rule, fact: Facts):
+    def before_evaluate(self, rule: Rule, fact: Facts) -> bool:
         """
         Triggered before the evaluation of a rule.
         :param rules: being evaluated

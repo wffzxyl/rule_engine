@@ -15,4 +15,4 @@ class Condition(metaclass=ABCMeta):
         :param facts: facts known when evaluating the rule
         :return: true if the rule should be triggered, false otherwise
         """
-        return False
+        return True

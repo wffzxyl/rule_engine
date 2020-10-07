@@ -26,45 +26,45 @@ class Rule(metaclass=ABCMeta):
         self._priority = priority
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @name.setter
-    def name(self, name):
+    def name(self, name: str):
         self._name = name
 
     @property
-    def description(self):
+    def description(self) -> str:
         return self._description
 
     @description.setter
-    def description(self, description):
+    def description(self, description: str):
         self._description = description
 
     @property
-    def domain(self):
+    def domain(self) -> str:
         return self._domain
 
     @domain.setter
-    def domain(self, domain):
+    def domain(self, domain: str):
         self._domain = domain
 
     @property
-    def priority(self):
+    def priority(self) -> int:
         return self._priority
 
     @priority.setter
-    def priority(self, priority):
+    def priority(self, priority: str):
         self._priority = priority
 
     @abstractmethod
-    def evaluate(self, facts: Facts):
+    def evaluate(self, facts: Facts) -> bool:
         """
         This method encapsulates the rule's conditions.
         :param facts: to fire
         :return: True if the rule should be applied given the provided facts, false otherwise
         """
-        return False
+        pass
 
     @exception_handler
     @abstractmethod

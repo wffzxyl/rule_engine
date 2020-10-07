@@ -9,12 +9,6 @@ from easyrules.config import DEFAULT_NAME, DEFAULT_DESCRIPTION, DEFAULT_DOMAIN, 
 
 
 class DefaultRule(Rule):
-    """
-    :type name: str
-    :type description: str
-    :type domain: str
-    :type priority: int
-    """
     def __init__(self,
                  name: str = DEFAULT_NAME,
                  description: str = DEFAULT_DESCRIPTION,

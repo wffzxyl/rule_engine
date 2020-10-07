@@ -1,4 +1,10 @@
 # coding: utf-8
+"""
+Assign name、description、domain and priority properties's value for a rule by a decorator, For example:
+@RuleDecorator(name='hello_word', description='desc', domain='example', priority=2)
+class HelloWorldRule(Rule):
+    pass
+"""
 
 from functools import wraps
 from easyrules import config

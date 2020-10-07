@@ -18,11 +18,10 @@ class CompositeRule(Rule):
                  ):
         super(CompositeRule, self).__init__(name, description, domain, priority)
         self._rules: Set[Rule] = set()
-        # private final Map<Object, Rule> proxyRules # TODO, ????
 
     @abstractmethod
     def evaluate(self, facts: Facts) -> bool:
-        pass
+        return True
 
     @abstractmethod
     def execute(self, facts: Facts):
@@ -35,6 +34,7 @@ class CompositeRule(Rule):
 
     def remove_rule(self, rule: Rule):
         # Remove one rule.
+        if not rule: raise TypeError('rule must not be None')
         rule = self.get_by_name(rule.name)
         if rule:
             self._rules.remove(rule)
@@ -46,3 +46,9 @@ class CompositeRule(Rule):
             if rule.name == rule_name:
                 return rule
         return None
+
+    def __repr__(self):
+        return 'Rule{name=%s, description=%s, domain=%s, priority=%s, _rules=%s}' % (
+            self._name, self._description, self._domain, self._priority, self._rules)
+
+    __str__ = __repr__

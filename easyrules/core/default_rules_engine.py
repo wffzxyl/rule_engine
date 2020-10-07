@@ -81,16 +81,16 @@ class DefaultRuleEngine(AbstractRulesEngine):
                     break
 
     def _log_parameters(self):
-        logger.info('Parameters: %s' % self._parameters)
+        logger.debug('Parameters: %s' % self._parameters)
 
     def _log_rules_and_facts(self, rules: Rules, facts: Facts):
-        logger.info('Registered rules:')
+        logger.debug('Registered rules:')
         for rule in rules:
-            logger.info(rule)
+            logger.debug(rule)
 
-        logger.info('Known facts:')
+        logger.debug('Known facts:')
         for fact in facts:
-            logger.info(fact)
+            logger.debug(fact)
 
     def check(self, rules: Rules, facts: Facts):
         self._trigger_listeners_before_fire(rules, facts)

@@ -16,4 +16,4 @@ from .utils import logger, exception_handler
 
 from .api import Action, Rule, Condition, RuleDecorator, Fact, Facts, Rule, Rules, RulesEngine, RulesEngineParameters
 from .core import DefaultRule, DefaultRuleEngine, RuleBuilder
-from .support import ActivationRuleGroup, CompositeRule, ConditionalRuleGroup, UnitRuleGroup
+from .support import ActivationRuleGroup, CompositeRule, ConditionalRuleGroup, UnitRuleGroup, YamlRuleDefinitionReader, YamlRuleFactory

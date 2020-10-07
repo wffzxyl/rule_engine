@@ -14,11 +14,11 @@ class Fact(metaclass=ABCMeta):
         self._value = value
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def value(self):
+    def value(self) -> object:
         return self._value
 
     def __repr__(self):

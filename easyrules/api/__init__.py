@@ -11,4 +11,3 @@ from .rule_listener import RuleListener
 from .rules import Rules
 from .rules_engine_parameters import RulesEngineParameters
 from .rules_engine import RulesEngine
-
