@@ -47,8 +47,6 @@ class DefaultRuleEngine(AbstractRulesEngine):
             evaluation_result = False
             try:
                 evaluation_result = rule.evaluate(facts)
-                if self._parameters.skip_on_first_applied_rule:
-                    break
             except Exception as e:
                 logger.error("Rule %s evaluated with error, %s" % (name, traceback.format_exc()))
                 self._trigger_listeners_on_evaluate_error(rule, facts, e)
@@ -57,21 +55,21 @@ class DefaultRuleEngine(AbstractRulesEngine):
                     break
 
             if evaluation_result:
-                logger.debug("Rule %s triggered" % name)
+                logger.info("Rule %s triggered" % name)
                 self._trigger_listeners_after_evaluate(rule, facts, True)
                 try:
                     self._trigger_listeners_before_execute(rule, facts)
                     rule.execute(facts)
-                    logger.debug("Rule %s performed successfully" % name)
+                    logger.info("Rule %s performed successfully" % name)
                     self._trigger_listeners_on_success(rule, facts)
                     if self._parameters.skip_on_first_applied_rule:
-                        print("Next rules will be skipped since parameter skip_on_first_applied_rule is set")
+                        logger.debug("Next rules will be skipped since parameter skip_on_first_applied_rule is set")
                         break
                 except Exception as e:
                     logger.error("Rule %s executed with error, %s" % (name, traceback.format_exc()))
                     self._trigger_listeners_on_failure(rule, facts, e)
                     if self._parameters.skip_on_first_failed_rule:
-                        print("Next rules will be skipped since parameter skip_on_first_failed_rule is set")
+                        logger.debug("Next rules will be skipped since parameter skip_on_first_failed_rule is set")
                         break
             else:
                 logger.debug("Rule %s has been evaluated to False, it has not been executed" % name)
@@ -81,7 +79,8 @@ class DefaultRuleEngine(AbstractRulesEngine):
                     break
 
     def _log_parameters(self):
-        logger.debug('Parameters: %s' % self._parameters)
+        logger.debug('DefaultRuleEngine Parameters:')
+        logger.debug(self._parameters)
 
     def _log_rules_and_facts(self, rules: Rules, facts: Facts):
         logger.debug('Registered rules:')

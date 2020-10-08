@@ -42,11 +42,11 @@ class RulesEngineParameters(object):
         return self._rule_priority_threshold
 
     def __repr__(self):
-        return "Engine parameters {{" \
-               "skip_on_first_applied_rule %s, " \
-               "skip_on_first_failed_rule %s, " \
-               "skip_on_first_non_triggered_rule %s, " \
-               "rule_priority_threshold %s.}}".format(
+        return "RulesEngineParameters{{" \
+               "skip_on_first_applied_rule=%s, " \
+               "skip_on_first_failed_rule=%s, " \
+               "skip_on_first_non_triggered_rule=%s, " \
+               "rule_priority_threshold=%s.}}" % (
             self._skip_on_first_applied_rule,
             self._skip_on_first_failed_rule,
             self._skip_on_first_non_triggered_rule,

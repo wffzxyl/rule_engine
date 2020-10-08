@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="easyrules",
-    version="0.0.3",
+    version="0.2.0",
     author="wffzxyl",
     author_email="wffzxyl@gmail.com",
     description="A simple rules engine",
